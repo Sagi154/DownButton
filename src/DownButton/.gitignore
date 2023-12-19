@@ -2,3 +2,4 @@ my_logs.log
 Downloads/*
 __pycache__/
 Downloads cache.sqlite3
+.idea/
