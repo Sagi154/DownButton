@@ -1,0 +1,5 @@
+src/DownButton/my_logs.log
+src/DownButton/Downloads/*
+__pycache__/
+Downloads cache.sqlite3
+.idea/
