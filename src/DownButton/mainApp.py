@@ -87,3 +87,42 @@ def is_youtube_video(song_url: str) -> bool:
         elif len(parsed_url.path) > 1:
             return True
     return False
+
+def main():
+    """
+    Used for testing, will be deleted later
+    :return:
+    """
+    song_link = "https://www.youtube.com/watch?v=bpOSxM0rNPM"  # Do i wanna know
+    song_type = "mp3"
+    song_down = YoutubeSongDownloader(song_link, song_type)
+    song_name = song_down.get_song_name()
+    song_down.download_song()
+    add_song_to_cache(song_name, song_type)
+    print("song downloaded")
+    file_name = f"{get_valid_file_name(song_name)}.{song_type}"
+    file_path = Path(f"{DOWNLOAD_DIR}/{file_name}")
+    print(f"file name: {file_name}")
+    print(f"file path: {file_path}")
+    print(f"locate file: {file_path.exists()}")
+    print(f"in cache: {is_song_in_cache(song_name, song_type)}")
+    # update_song_count_in_cache(song_name, song_type)
+    # print("Deleting song.....")
+    # remove_song_from_cache(song_name, song_type)
+    # print(f"locate file: {file_path.exists()}")
+    # print(f"in cache: {is_song_in_cache(song_name, song_type)}")
+    # remove_song_from_cache(song_name, song_type)
+
+
+    # date1 = datetime.date(datetime.now())
+    # date2 = datetime.now().date()
+    # print(type(date1))
+    # print(type(date2))
+    # print(date1 == date2)
+
+
+
+if __name__ == "__main__":
+    main()
+
+

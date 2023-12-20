@@ -2,6 +2,9 @@ import sqlite3
 from datetime import datetime
 import logging
 from YoutubeSongDownloader import DOWNLOAD_DIR
+from pathlib import Path
+from pprint import pprint
+import os
 
 DB_NAME: str = "Downloads cache.sqlite3"
 """
@@ -13,9 +16,7 @@ Number of days to save downloaded songs in cache.
 """
 
 
-# TODO : Delete from directory method
-# TODO: Make a method that checks that all songs in DB are actually in the Downloads folder
-# TODO: Make an update by popularity method
+# TODO: Make an update by popularity method - optional
 
 def create_testing_cache():
     """
@@ -68,6 +69,7 @@ def is_song_in_cache(song_name: str, file_type: str) -> bool:
 def update_song_count_in_cache(song_name: str, file_type: str) -> None:
     """
     Increments the number of downloads of the song by 1.
+    This method is called when the song has already been downloaded and is kept in the cache.
     :param song_name: The name of the song.
     :param file_type: The type of file of the song.
     :return:
@@ -92,15 +94,15 @@ def add_song_to_cache(song_name: str, file_type: str) -> None:
     with sqlite3.connect(DB_NAME) as conn:
         command = """INSERT OR IGNORE INTO Songs (song_name, file_type, download_count, last_added) 
         VALUES(?, ?, 1, ?);"""
-        conn.execute(command, (song_name, file_type, datetime.now().date))
+        conn.execute(command, (song_name, file_type, datetime.now().date()))
         conn.commit()
         logging.info(f"Song {song_name}.{file_type} has been added to the cache.")
 
 
-def get_songs_in_cache() -> list:
+def get_songs_in_db() -> list:
     """
     This method is used to get all the songs in the DB.
-    :return: A list of dicts that each dict represents a song in the cache.
+    :return: A list of dicts that each dict represents a song in the DB.
     """
     songs_list = []
     with sqlite3.connect(DB_NAME) as conn:
@@ -116,6 +118,20 @@ def get_songs_in_cache() -> list:
     return songs_list
 
 
+def get_songs_in_directory() -> list:
+    """
+    This method is used to get all the songs in the downloads directory.
+    :return: A list of dicts that each dict represents a song in the directory.
+    """
+    songs = [(os.path.splitext(file)[0], os.path.splitext(file)[1][1:]) for file in os.listdir(DOWNLOAD_DIR)
+                  if file.endswith("mp3") or file.endswith("mp4")]
+    columns = ["song_name", "file_type"]
+    songs_list = []
+    for song in songs:
+        songs_list.append(dict(zip(columns, song)))
+    return songs_list
+
+
 def delete_song_from_directory(song_name: str, file_type: str) -> None:
     """
     Deletes the song from the Downloads directory (DOWNLOAD_DIR).
@@ -123,7 +139,13 @@ def delete_song_from_directory(song_name: str, file_type: str) -> None:
     :param file_type: The type of the file to remove, either MP3 or MP4.
     :return:
     """
-    pass
+    file_name = f"{song_name}.{file_type}"
+    file_path = Path(f"{DOWNLOAD_DIR}/{file_name}")
+    if file_path.exists():
+        file_path.unlink()
+        logging.info(f"Song {song_name}.{file_type} has been successfully removed from the directory")
+    else:
+        print("File not found")
 
 
 def remove_song_from_cache(song_name: str, file_type: str) -> None:
@@ -151,7 +173,7 @@ def update_cache_by_date() -> None:
     :return:
     """
     today = datetime.now().date()
-    songs = get_songs_in_cache()
+    songs = get_songs_in_db()
     songs_removed = []
     for song in songs:
         song_date = datetime.fromisoformat(song["last_added"]).date()
@@ -189,14 +211,75 @@ def update_cache_by_popularity() -> None:
     pass
 
 
-def main():
+def locate_songs_missing_from_directory() -> list:
     """
-    Currently it is used solely for testing.
+    Looks for songs that are present in the database but
+    are not present in the Downloads directory.
+    :return: A list of dicts that each dict represents a song in the database.
+    """
+    songs_in_db = get_songs_in_db()
+    mismatches = []
+    for song in songs_in_db:
+        song_name = song["song_name"]
+        file_type = song["file_type"]
+        file_name = f"{song_name}.{file_type}"
+        file_path = Path(f"{DOWNLOAD_DIR}/{file_name}")
+        if not file_path.exists():
+            mismatches.append(song)
+    return mismatches
+
+
+def locate_songs_missing_from_db() -> list:
+    """
+    Looks for songs that are present in the Downloads directory but
+    are not present in the database.
+    :return: A list of dicts that each dict represents a song in the Downloads directory.
+    """
+    songs_in_dir = get_songs_in_directory()
+    mismatches = []
+    for song in songs_in_dir:
+        if not is_song_in_cache(song["song_name"], song["file_type"]):
+            mismatches.append(song)
+    return mismatches
+
+
+def remove_mismatches_from_cache() -> None:
+    """
+    Removes songs that do not appear on both the database and the Downloads directory.
     :return:
     """
-    song = "Arctic Monkeys - Do I Wanna Know (Official Video)"
-    remove_song_from_cache(song, "mp3")
-    print(is_song_in_cache(song, "mp3"))
+    songs_missing_from_db = locate_songs_missing_from_db()
+    songs_missing_from_dir = locate_songs_missing_from_directory()
+    for song in songs_missing_from_db:
+        remove_song_from_cache(song["song_name"], song["file_type"])
+    for song in songs_missing_from_dir:
+        remove_song_from_cache(song["song_name"], song["file_type"])
+
+
+def main():
+    """
+    Used for testing, will be deleted later
+    :return:
+    """
+    song = "Arctic Monkeys - Are You Mine"
+    file_type = "mp3"
+    song_url = "https://www.youtube.com/watch?v=bpOSxM0rNPM"
+    print("Adding song...")
+    add_song_to_cache(song, file_type)
+    if is_song_in_cache(song, "mp3"):
+        print("song added")
+    mismatches = locate_songs_missing_from_directory()
+    print("Songs missing from directory:")
+    for mismatch in mismatches:
+        print(mismatch)
+    mismatches2 = locate_songs_missing_from_db()
+    print("Songs missing from data base:")
+    for mismatch in mismatches2:
+        print(mismatch)
+    print("Removing mismatches from cache")
+    remove_mismatches_from_cache()
+
+
 
 
 if __name__ == "__main__":

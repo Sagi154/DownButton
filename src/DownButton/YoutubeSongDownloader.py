@@ -1,10 +1,9 @@
 from __future__ import unicode_literals
 from pathlib import Path
 import youtube_dl
-import os
 import time
 
-DOWNLOAD_DIR = Path("Downloads")
+DOWNLOAD_DIR = "Downloads"
 """
 The directory to which the song is downloaded to.
 """
@@ -49,8 +48,8 @@ class YoutubeSongDownloader:
         self.file_type = file_type
         self.download_progress = 0
         self.update_song_details()
-        file_name = get_valid_file_name(self.song_name)
-        self.song_path = Path(os.path.join(DOWNLOAD_DIR, "".join((file_name, ".", file_type))))
+        file_name = f"{self.song_name}.{file_type}"
+        self.song_path = Path(f"{DOWNLOAD_DIR}/{file_name}")
 
     def progress_hook(self, d) -> None:
         """
@@ -73,13 +72,11 @@ class YoutubeSongDownloader:
                         'outtmpl': f'{DOWNLOAD_DIR}/%(title)s.%(ext)s',
                         'progress_hooks': [self.progress_hook],
                         'quiet': True,
-                        }
-        """
-                                'postprocessors': [{
+                        'postprocessors': [{
                             'key': 'FFmpegVideoConvertor',
                             'preferedformat': 'mp3'
-                        }],
-        """
+                        }]
+                        }
         ydl_opts_mp4 = {'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
                         'outtmpl': f'{DOWNLOAD_DIR}/%(title)s.%(ext)s',
                         'progress_hooks': [self.progress_hook],
@@ -99,7 +96,7 @@ class YoutubeSongDownloader:
         """
         with youtube_dl.YoutubeDL({'quiet': True}) as ydl:
             result = ydl.extract_info(self.song_url, download=False)
-            self.song_name = result['title']
+            self.song_name = get_valid_file_name(result['title'])
             self.song_duration = result['duration']
 
     def get_song_name(self) -> str:
@@ -129,17 +126,31 @@ def main():
     Used for testing, will be deleted later
     :return:
     """
-    url = "https://www.youtube.com/watch?v=bpOSxM0rNPM"  # Do i wanna know
-    dl1 = YoutubeSongDownloader(url, "mp3")
-    # dl1.download_song()
-    dl2 = YoutubeSongDownloader(url, "mp4")
-    # dl2.download_song()
-    # dl1.download_song_mp3()
-    print(dl1.song_path)
-    print(dl2.song_path)
-    # dl1.get_download_link("mp3")
-    # # dl1.get_download_link()
-    # app.run(debug=True)
+
+    # song_url = "https://www.youtube.com/watch?v=bpOSxM0rNPM"  # Do i wanna know
+    # song_type = "mp3"
+    # song_down = YoutubeSongDownloader(song_url, song_type)
+    # song_name = song_down.get_song_name()
+    # song_down.download_song()
+    # print("song downloaded")
+    # file_name = f"{get_valid_file_name(song_name)}.{song_type}"
+    # file_path = Path(f"{DOWNLOAD_DIR}/{file_name}")
+    # print(f"file name: {file_name}")
+    # print(f"file path: {file_path}")
+    # print(file_path.exists())
+
+    song_test = "https://www.youtube.com/watch?v=fRk6K-H1Lxc" # kid cudi cudderisback
+    type = "mp3"
+    test_down = YoutubeSongDownloader(song_test, type)
+    print(f"Downloading {test_down.get_song_name()}")
+    test_down.download_song()
+    print("Download complete")
+    file_name = f"{get_valid_file_name(test_down.get_song_name())}.{type}"
+    file_path = Path(f"{DOWNLOAD_DIR}/{file_name}")
+    print(f"file name: {file_name}")
+    print(f"file path: {file_path}")
+    print(file_path.exists())
+
 
 
 if __name__ == "__main__":
