@@ -5,6 +5,9 @@ name = "pypi"
 
 [packages]
 flask = "*"
+websockets = "*"
+uvicorn = "*"
+fastapi = {extras = ["all"], version = "*"}
 
 [dev-packages]
 

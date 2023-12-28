@@ -1,22 +1,24 @@
 from __future__ import unicode_literals
+import asyncio
+import threading
 from pathlib import Path
 import youtube_dl
-import time
 
 DOWNLOAD_DIR = "Downloads"
 """
 The directory to which the song is downloaded to.
 """
 
-# TODO: show download percentage
-# TODO: send a download link to client
-# TODO: update metadata
-# TODO: make testers
-# TODO Queue mechanism
-# TODO get song url from name
+# TODO: send a download link to client - Sagi
+# TODO: update metadata - **
+# TODO: make testers - *
+# TODO: Queue mechanism - ***
+# TODO: get song url from name - **
+# TODO: Download playlist - *
+# TODO: save files by youtube id
 
 
-def get_song_url(song_name: str) -> str:
+def get_song_url_by_name(song_name: str) -> str:
     """
     This method gets a song name and returns a link of the song from YouTube.
     :param song_name: The name of the song.
@@ -36,51 +38,68 @@ def get_valid_file_name(song_name: str) -> str:
     return "".join(x for x in song_name if x not in illegal_chars)
 
 
-class YoutubeSongDownloader:
+class YouTubeMainDownloader:
     """
     This class represents a download of a song from YouTube
     """
 
-    def __init__(self, song_url, file_type):
+    def __init__(self, song_url, file_type, progress_callback):
+        self.youtube_id = None
         self.song_name = None
         self.song_duration = None
         self.song_url = song_url
         self.file_type = file_type
         self.download_progress = 0
-        self.update_song_details()
-        file_name = f"{self.song_name}.{file_type}"
-        self.song_path = Path(f"{DOWNLOAD_DIR}/{file_name}")
+        self.update_song_download_details()
+        # self.file_name = None
+        # self.song_path = Path(f"{DOWNLOAD_DIR}/{self.file_name}")
+        self.progress_callback = progress_callback
 
     def progress_hook(self, d) -> None:
         """
         Used by youtube_dl while downloading to show progress percentage.
-        :param d:
+        :param d: current download.
         :return:
         """
-        if (d['status'] == 'downloading') and (self.download_progress != "100.0%") \
-                and (d['_percent_str'] != self.download_progress):
-            self.download_progress = d['_percent_str']
-            print(f"Download progress: {self.download_progress}")
-            time.sleep(0.2)
+        if d['status'] == "downloading":
+            perc = d['_percent_str'].strip()
+            self.download_progress = float(perc.rstrip('%'))
+            th = threading.Thread(target=self.send_progress_to_websocket, args=(self.download_progress,))
+            th.start()
+            th.join()
 
-    def download_song(self) -> None:
+    def send_progress_to_websocket(self, perc: float):
+        """
+        Used while downloading to send the progression percentage to the websocket.
+        :param perc: The current download progression percentage.
+        :return:
+        """
+        asyncio.run(self.progress_callback(perc))
+
+    def download_song(self, random_string: str) -> str:
         """
         Downloads the song to the server.
-        :return:
+        :param random_string: A random string that is appended to the name of the downloaded file.
+        :return: The name of the downloaded file.
         """
         ydl_opts_mp3 = {'format': 'bestaudio/best',
-                        'outtmpl': f'{DOWNLOAD_DIR}/%(title)s.%(ext)s',
+                        'outtmpl': f'{DOWNLOAD_DIR}/%(title)s_{random_string}.%(ext)s',
                         'progress_hooks': [self.progress_hook],
                         'quiet': True,
                         'postprocessors': [{
                             'key': 'FFmpegVideoConvertor',
                             'preferedformat': 'mp3'
-                        }]
+                        }, {'key': 'FFmpegMetadata'}],
+                        'min_wait': 0.25
                         }
         ydl_opts_mp4 = {'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
-                        'outtmpl': f'{DOWNLOAD_DIR}/%(title)s.%(ext)s',
+                        'outtmpl': f'{DOWNLOAD_DIR}/%(title)s_{random_string}.%(ext)s',
                         'progress_hooks': [self.progress_hook],
-                        'quiet': True
+                        'postprocessors': [{
+                            'key': 'FFmpegMetadata'
+                        }],
+                        'quiet': True,
+                        'min_wait': 0.25
                         }
         if self.file_type == "mp3":
             ydl_opts = ydl_opts_mp3
@@ -89,7 +108,7 @@ class YoutubeSongDownloader:
         with youtube_dl.YoutubeDL(ydl_opts) as ydl:
             ydl.download([self.song_url])
 
-    def update_song_details(self) -> None:
+    def update_song_download_details(self) -> None:
         """
         Updates the object representing the song download, such as song duration and name.
         :return:
@@ -98,6 +117,7 @@ class YoutubeSongDownloader:
             result = ydl.extract_info(self.song_url, download=False)
             self.song_name = get_valid_file_name(result['title'])
             self.song_duration = result['duration']
+            self.youtube_id = result['id']
 
     def get_song_name(self) -> str:
         """
@@ -112,13 +132,6 @@ class YoutubeSongDownloader:
         :return:
         """
         return self.song_duration
-
-
-def get_download_link(song_path):
-    pass
-
-def update_file_metadata():
-    pass
 
 
 def main():
@@ -139,18 +152,23 @@ def main():
     # print(f"file path: {file_path}")
     # print(file_path.exists())
 
-    song_test = "https://www.youtube.com/watch?v=fRk6K-H1Lxc" # kid cudi cudderisback
-    type = "mp3"
-    test_down = YoutubeSongDownloader(song_test, type)
-    print(f"Downloading {test_down.get_song_name()}")
-    test_down.download_song()
-    print("Download complete")
-    file_name = f"{get_valid_file_name(test_down.get_song_name())}.{type}"
-    file_path = Path(f"{DOWNLOAD_DIR}/{file_name}")
-    print(f"file name: {file_name}")
-    print(f"file path: {file_path}")
-    print(file_path.exists())
+    # song_test = "https://www.youtube.com/watch?v=fRk6K-H1Lxc" # kid cudi cudderisback
+    # type = "mp3"
+    # test_down = YouTubeMainDownloader(song_test, type)
+    # print(f"Downloading {test_down.get_song_name()}")
+    # test_down.download_song()
+    # print("Download complete")
+    # file_name = f"{get_valid_file_name(test_down.get_song_name())}.{type}"
+    # file_path = Path(f"{DOWNLOAD_DIR}/{file_name}")
+    # print(f"file name: {file_name}")
+    # print(f"file path: {file_path}")
+    # print(file_path.exists())
 
+    song1 = YouTubeMainDownloader("https://www.youtube.com/watch?v=fRk6K-H1Lxc", "mp3", main )
+    song2 = YouTubeMainDownloader("https://www.youtube.com/watch?v=78DVtcsT26k", "mp3", main)
+    print(f"song1: name={song1.song_name}, id={song1.youtube_id}")
+    print(f"song2: name={song2.song_name}, id={song2.youtube_id}")
+    song1.download_song("bh3")
 
 
 if __name__ == "__main__":

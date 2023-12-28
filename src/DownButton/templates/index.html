@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <link rel="stylesheet" href="../static/css/style.css">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Download YouTube Songs</title>
+    </head>
+    <body >
+        <div class="container" id="container">
+            <div class="buttons-container">
+                <button id="song_button" type="button" class="song-button" onclick="toggleSong('song_form', 'playlist_form')">Song</button>
+                <button id="playlist_button" type="button" class="playlist-button" onclick="togglePlaylist('playlist_form', 'song_form')">Playlist</button>
+            </div>
+            <div class="forms-container">
+<!--                <form id="song_form" action="get_song_id" method="POST" class="song-form">-->
+                <form id="song_form" class="song-form">
+                    <input id="song_id" type="text" name="song_id" placeholder="Enter Song name or YouTube link" class="song-input">
+                    <select id="file_type" name="file_type" size="1" class="file-type">
+                        <option value="mp3" selected>mp3</option>
+                        <option value="mp4">mp4</option>
+                    </select>
+                </form>
+                <form id="playlist_form" class="playlist-form">
+                    <input type="text" name="playlist_id" placeholder="Enter YouTube playlist link" class="playlist-input">
+                </form>
+            </div>
+        <button type="button" class="down_button" onclick="start_download(event)" id="butt_test">Download</button>
+        </div>
+        <div class="down-progression-container" id="down-progression-container">
+            <label class="error_666_display" id="error_666_display">NULL</label>
+            <label class="down-state-starting" id="down_state_starting">Download Starting.....</label>
+            <label class="down-state-progress" id="down_state_progress">NULL</label>
+            <div class="down-state-finished" id="down-state-finished">
+                <label class="down-state">Download is Ready!</label>
+                <button class="direct_down_button" type="button" id="download_ready" onclick="download_ready()">Download</button>
+            </div>
+        </div>
+        <script src="../static/js/script.js"></script>
+    </body>
+</html>
+

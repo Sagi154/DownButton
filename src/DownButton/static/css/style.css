@@ -1,0 +1,243 @@
+
+
+.body{
+    background-color: #F5FBFF;
+
+}
+
+/*
+https://www.schemecolor.com/light-blue-white.php
+https://www.schemecolor.com/love-for-greens.php
+https://www.schemecolor.com/pastel-orange-yellow-gradient.php
+https://www.w3schools.com/css/css_form.asp
+https://www.geeksforgeeks.org/design-a-web-page-using-html-and-css/
+ */
+
+.container{
+    display: flex;
+    margin: auto;
+    width: 1000px;
+    height: 70px;
+    margin-top: 350px;
+    align-items: center;
+    justify-content: center;
+}
+
+.buttons-container{
+    display: flex;
+    flex-direction: column;
+    width: 15%;
+    height: inherit;
+    margin-left: 0;
+    text-align: left;
+    border-right:0;
+}
+
+.song-button{
+    width: 100%;
+    height: 35px;
+    box-sizing: border-box;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    border:2px solid;
+    border-right: 1px solid;
+    border-bottom: 0;
+    border-top-left-radius: 8px;
+    background-color: #BDD5E7;
+}
+
+.playlist-button{
+    width: 100%;
+    height: 35px;
+    box-sizing: border-box;
+    text-align: center;
+    font-size: 16px;
+    border:2px solid;
+    border-top: 3px solid;
+    border-bottom-left-radius: 8px;
+    background-color:  #FFB480;
+}
+
+.song-button:hover{
+    background-color: #BDD5E7;
+}
+.playlist-button:hover{
+    background-color: #FEC98F;
+}
+
+
+.forms-container{
+    display: flex;
+    flex-direction: column;
+    width: 70%;
+    text-align: center;
+    height: inherit;
+    box-sizing: border-box;
+    background-color: #BDD5E7;
+}
+
+.song-form{
+    width: 100%;
+    height: 70px;
+    text-align: center;
+    border: 2px solid;
+    border-left: 0;
+    box-sizing: border-box;
+    display: flex;
+
+
+}
+
+.song-input{
+    width: 83%;
+    height: 40px;
+    text-align: center;
+    font-size: 20px;
+    border:0;
+    box-sizing: border-box;
+    margin-top: 2%;
+    margin-left: 2%;
+    margin-right: 2%;
+    background-color: #BDD5E7;
+}
+
+.song-input:hover{
+    background-color: #D1E5F4;
+    border: 0.5px solid;
+}
+
+.file-type{
+    width: 15%;
+    height: 67px;
+    text-align: center;
+    font-size: 20px;
+    border: 0;
+    border-left:0.5px solid;
+    box-sizing: border-box;
+    background-color: #BDD5E7;
+}
+
+.file-type:hover{
+    background-color: #D1E5F4;
+    border: 0;
+    border-left:1px solid;
+    box-sizing: border-box;
+}
+
+.playlist-form{
+    width: 100%;
+    height: 70px;
+    text-align: center;
+    border: 2px solid;
+    border-left: 0;
+    box-sizing: border-box;
+    display: None;
+    background-color: #FEC98F;
+}
+
+.playlist-input{
+    width: 96%;
+    height: 40px;
+    text-align: center;
+    font-size: 20px;
+    border:0;
+    box-sizing: border-box;
+    margin-top: 2%;
+    margin-left: 2%;
+    margin-right: 2%;
+    background-color: #FEC98F;
+}
+
+.playlist-input:hover{
+    background-color: #E5F3FD;
+    border: 0.5px solid;
+}
+
+.down_button{
+    width:150px;
+    height:inherit;
+    box-sizing: border-box;
+    border: 2px solid;
+    border-left:0;
+    border-radius: 8px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    font-size: 22px;
+    margin-left: 0;
+    background-color: #AAE0A6;
+}
+
+.down_button:hover{
+    background-color: #98D9B0;
+}
+
+.down-progression-container{
+    display: None;
+    flex-direction: row;
+    margin: auto;
+    width: 500px;
+    height: 70px;
+    margin-top: 350px;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid;
+    border-radius: 8px;
+}
+
+.error_666_display{
+    display: None;
+    font-size: 22px;
+}
+
+.down-state-starting{
+    display:None;
+    font-size: 22px;
+}
+
+.down-state-progress{
+    margin: auto;
+    display: None;
+    font-size: 22px;
+}
+
+.progress-state{
+    margin: auto;
+    margin-left: 15px;
+}
+
+.down-state-finished{
+    display: None;
+    flex-direction: row;
+}
+
+.down-state{
+    padding-top: 5px;
+    padding-left: 10px;
+    width: 300px;
+    margin-left: 0;
+    font-size: 24px;
+    text-align: center;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.direct_down_button{
+    top: 50%;
+    padding-top: 4px;
+    padding-left: 13px;
+    height: 40px;
+    width: 40%;
+    display: flex;
+    font-size: 24px;
+    margin-left: 15%;
+    text-align: center;
+    border: 2px solid;
+    border-radius: 6px;
+    background-color: #98D9B0;
+}
+
+.direct_down_button:hover{
+    background-color: #AAE0A6;
+}
