@@ -5,6 +5,9 @@ import random
 
 MAXIMUM_VIDEO_DURATION_IN_MINUTES = 10
 
+def asdf():
+    return
+
 
 def main():
     """

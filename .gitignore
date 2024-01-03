@@ -5,4 +5,5 @@ Downloads cache.sqlite3
 Pipfile
 Pipfile.lock
 my_logs.log
-src/DownButton/mainApp.py
+mainApp.py
+
