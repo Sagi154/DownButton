@@ -1,0 +1,1 @@
+class ProgressMessage(StateMessage)

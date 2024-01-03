@@ -1,7 +1,7 @@
-let song_or_playlist = "song";
+let download_type = "song";
 
 function toggleSong(showFormId, hideFormId) {
-    song_or_playlist = "song";
+    download_type = "song";
     document.getElementById(showFormId).style.display = 'flex';
     document.getElementById(hideFormId).style.display = 'none';
     document.getElementById("song_button").style.backgroundColor = '#BDD5E7';
@@ -27,7 +27,7 @@ function toggleSong(showFormId, hideFormId) {
                     }
 }
 function togglePlaylist(showFormId, hideFormId) {
-    song_or_playlist = "playlist";
+    download_type = "playlist";
     document.getElementById(showFormId).style.display = 'flex';
     document.getElementById(hideFormId).style.display = 'none';
     document.getElementById("song_button").style.backgroundColor = '#9ABDDC';
@@ -51,45 +51,49 @@ function togglePlaylist(showFormId, hideFormId) {
                         this.style.backgroundColor = "#FEC98F";
                     }
 }
-
 var ws = new WebSocket(("ws://localhost:8000/download"));
 // gets back information from the server and displays it to the client
 ws.onmessage = function(event) {
     var json_data = JSON.parse(event.data);
-    var state = json_data.state;
+    const state = json_data.state.toLowerCase();
     if (state === "error_666") {
         var message = json_data.message;
         document.getElementById("error_666_display").style.display = "flex";
         document.getElementById("error_666_display").textContent = message;
     } else if (state === "starting") {
         var song_name = json_data.song_name;
+        document.getElementById("queue_message").style.display = "none";
         document.getElementById("down_state_starting").style.display = "flex";
         document.getElementById("down_state_starting").textContent = `Starting download ${song_name}`;
     } else if (state === "downloading") {
         var perc = json_data.perc;
-        document.getElementById("down_state_starting").style.display = "None";
+        document.getElementById("down_state_starting").style.display = "none";
         document.getElementById("down_state_progress").style.display = "flex";
         document.getElementById("down_state_progress").textContent = `Download progress is ${perc}`;
     } else if (state === "finished") {
         var link = json_data.link;
-        document.getElementById("down_state_progress").style.display = "None";
+        document.getElementById("down_state_progress").style.display = "none";
         document.getElementById("down-state-finished").style.display = "flex";
         var downloadLink = document.createElement('a');
         downloadLink.href = link;
         downloadLink.id = "downloadAnchor";
         document.body.appendChild(downloadLink);
+    } else if (state == "queue") {
+        var queue_message = json_data.message;
+        document.getElementById("queue_message").style.display = "flex";
+        document.getElementById("queue_message").textContent = queue_message;
     }
 }
 
 function start_download(event) {
-    if (song_or_playlist === "song")
+    if (download_type === "song")
         download_song(event);
 }
 
 function download_song(event) {
     var song_id = document.getElementById("song_id").value;
     var file_type = document.getElementById("file_type").value;
-    var input = JSON.stringify({song_id, file_type});
+    var input = JSON.stringify({download_type, song_id, file_type});
     ws.send(input);
     document.getElementById("container").style.display = "None";
     document.getElementById("down-progression-container").style.display = "flex";

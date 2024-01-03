@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 import asyncio
+import logging
 import threading
-from pathlib import Path
 import youtube_dl
 
 DOWNLOAD_DIR = "Downloads"
@@ -12,10 +12,8 @@ The directory to which the song is downloaded to.
 # TODO: send a download link to client - Sagi
 # TODO: update metadata - **
 # TODO: make testers - *
-# TODO: Queue mechanism - ***
 # TODO: get song url from name - **
 # TODO: Download playlist - *
-# TODO: save files by youtube id
 
 
 def get_song_url_by_name(song_name: str) -> str:
@@ -82,6 +80,7 @@ class YouTubeMainDownloader:
         :param random_string: A random string that is appended to the name of the downloaded file.
         :return: The name of the downloaded file.
         """
+        logging.debug(f"Starting to download {self.song_name}")
         ydl_opts_mp3 = {'format': 'bestaudio/best',
                         'outtmpl': f'{DOWNLOAD_DIR}/%(title)s_{random_string}.%(ext)s',
                         'progress_hooks': [self.progress_hook],
@@ -164,11 +163,11 @@ def main():
     # print(f"file path: {file_path}")
     # print(file_path.exists())
 
-    song1 = YouTubeMainDownloader("https://www.youtube.com/watch?v=fRk6K-H1Lxc", "mp3", main )
-    song2 = YouTubeMainDownloader("https://www.youtube.com/watch?v=78DVtcsT26k", "mp3", main)
-    print(f"song1: name={song1.song_name}, id={song1.youtube_id}")
-    print(f"song2: name={song2.song_name}, id={song2.youtube_id}")
-    song1.download_song("bh3")
+    # song1 = YouTubeMainDownloader("https://www.youtube.com/watch?v=fRk6K-H1Lxc", "mp3", main )
+    # song2 = YouTubeMainDownloader("https://www.youtube.com/watch?v=78DVtcsT26k", "mp3", main)
+    # print(f"song1: name={song1.song_name}, id={song1.youtube_id}")
+    # print(f"song2: name={song2.song_name}, id={song2.youtube_id}")
+    # song1.download_song("bh3")
 
 
 if __name__ == "__main__":

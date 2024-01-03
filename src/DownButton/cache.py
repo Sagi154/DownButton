@@ -1,9 +1,8 @@
 import sqlite3
 from datetime import datetime, time
 import logging
-from YouTubeMainDownloader import DOWNLOAD_DIR, YouTubeMainDownloader
+from YouTubeMainDownloader import DOWNLOAD_DIR
 from pathlib import Path
-from pprint import pprint
 import os
 
 DB_NAME: str = "Downloads cache.sqlite3"
@@ -93,7 +92,6 @@ def get_song_file_name(youtube_id: str, file_type: str) -> str:
     :param file_type: The type of file of the song.
     :return:
     """
-
     attempt = 0
     while attempt <= CONN_ATTEMPTS:
         try:
@@ -104,7 +102,7 @@ def get_song_file_name(youtube_id: str, file_type: str) -> str:
                 cursor = conn.execute(command, (youtube_id, file_type))
                 file_name = cursor.fetchone()[0]
                 conn.commit()
-                logging.info(f"Song {youtube_id} file name is: {file_name}")
+                logging.debug(f"Song {youtube_id} file name is: {file_name}")
                 return file_name
             break
         except sqlite3.OperationalError as err:
@@ -171,6 +169,7 @@ def add_song_to_cache(youtube_id: str, file_name: str, file_type: str) -> None:
                 attempt += 1
             else:
                 raise
+
 
 def get_songs_in_db() -> list:
     """
@@ -338,6 +337,7 @@ def clear_cache() -> None:
     for song in songs:
         remove_song_from_cache(song["youtube_id"], song["file_name"], song["file_type"])
 
+
 def main():
     """
     Used for testing, will be deleted later
@@ -366,6 +366,7 @@ def main():
     id = "-Iz9qOhAzdc"
     type = "mp3"
     print(get_song_file_name(id, type))
+    print(is_song_in_cache(id, "asdf", type))
 
 
 

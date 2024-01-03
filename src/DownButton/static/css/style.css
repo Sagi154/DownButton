@@ -2,7 +2,6 @@
 
 .body{
     background-color: #F5FBFF;
-
 }
 
 /*
@@ -132,7 +131,7 @@ https://www.geeksforgeeks.org/design-a-web-page-using-html-and-css/
     border: 2px solid;
     border-left: 0;
     box-sizing: border-box;
-    display: None;
+    display: none;
     background-color: #FEC98F;
 }
 
@@ -173,7 +172,7 @@ https://www.geeksforgeeks.org/design-a-web-page-using-html-and-css/
 }
 
 .down-progression-container{
-    display: None;
+    display: none;
     flex-direction: row;
     margin: auto;
     width: 500px;
@@ -186,18 +185,23 @@ https://www.geeksforgeeks.org/design-a-web-page-using-html-and-css/
 }
 
 .error_666_display{
-    display: None;
+    display: none;
+    font-size: 22px;
+}
+
+.queue_message{
+    display: none;
     font-size: 22px;
 }
 
 .down-state-starting{
-    display:None;
+    display:none;
     font-size: 22px;
 }
 
 .down-state-progress{
     margin: auto;
-    display: None;
+    display: none;
     font-size: 22px;
 }
 
@@ -207,7 +211,7 @@ https://www.geeksforgeeks.org/design-a-web-page-using-html-and-css/
 }
 
 .down-state-finished{
-    display: None;
+    display: none;
     flex-direction: row;
 }
 
